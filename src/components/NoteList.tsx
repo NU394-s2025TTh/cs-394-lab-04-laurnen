@@ -1,7 +1,9 @@
 // src/components/NoteList.tsx
 import React from 'react';
 
-// TODO: import { subscribeToNotes } from '../services/noteService';
+// TODO
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { subscribeToNotes } from '../services/noteService';
 import { Note, Notes } from '../types/Note';
 import NoteItem from './NoteItem';
 
@@ -16,14 +18,21 @@ const NoteList: React.FC<NoteListProps> = ({ onEditNote }) => {
   // TODO: display a loading message while notes are being loaded; error message if there is an error
 
   // Notes is a constant in this template but needs to be a state variable in your implementation and load from firestore
-  const notes: Notes = {
-    '1': {
-      id: '1',
-      title: 'Note 1',
-      content: 'This is the content of note 1.',
-      lastUpdated: Date.now() - 100000,
-    },
-  };
+  // const notes: Notes = {
+  //   '1': {
+  //     id: '1',
+  //     title: 'Note 1',
+  //     content: 'This is the content of note 1.',
+  //     lastUpdated: Date.now() - 100000,
+  //   },
+  // };
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [notes, setNotes] = React.useState<Notes>({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [loading, setLoading] = React.useState<boolean>(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [error, setError] = React.useState<string | null>(null);
 
   return (
     <div className="note-list">
