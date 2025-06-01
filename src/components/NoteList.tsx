@@ -1,8 +1,7 @@
 // src/components/NoteList.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 
-// TODO
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// TODO (DONE)
 import { subscribeToNotes } from '../services/noteService';
 import { Note, Notes } from '../types/Note';
 import NoteItem from './NoteItem';
@@ -17,6 +16,10 @@ const NoteList: React.FC<NoteListProps> = ({ onEditNote }) => {
   // TODO: manage state for notes, loading status, and error message
   // TODO: display a loading message while notes are being loaded; error message if there is an error
 
+  const [notes, setNotes] = React.useState<Notes>({});
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [error, setError] = React.useState<string | null>(null);
+
   // Notes is a constant in this template but needs to be a state variable in your implementation and load from firestore
   // const notes: Notes = {
   //   '1': {
@@ -27,12 +30,33 @@ const NoteList: React.FC<NoteListProps> = ({ onEditNote }) => {
   //   },
   // };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [notes, setNotes] = React.useState<Notes>({});
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [loading, setLoading] = React.useState<boolean>(true);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [error, setError] = React.useState<string | null>(null);
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    let unsubscribe: () => void;
+
+    try {
+      unsubscribe = subscribeToNotes((fetchedNotes) => {
+        setNotes(fetchedNotes);
+        setLoading(false);
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load notes');
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return <p>Loading notes...</p>;
+  }
+  if (error) {
+    return <p>/error/i</p>;
+  }
 
   return (
     <div className="note-list">

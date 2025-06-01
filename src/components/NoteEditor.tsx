@@ -141,7 +141,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ initialNote, onSave }) => {
           </button>
         ) : (
           <button type="submit" onClick={handleSubmit}>
-            {'Save Note'}
+            {initialNote ? 'Update Note' : 'Save Note'}
           </button>
         )}
       </div>
