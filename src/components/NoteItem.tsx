@@ -18,31 +18,28 @@ const NoteItem: React.FC<NoteItemProps> = ({ note, onEdit }) => {
   const [isDeleting, setIsDeleting] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
-    console.log('isDeleting state changed:', isDeleting);
-  }, [isDeleting]);
-
-  function handleDelete() {
+  const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this note?')) {
       setIsDeleting(true);
       setError(null);
-      deleteNote(note.id)
-        .catch((err) => {
-          setError(err instanceof Error ? err.message : 'Failed to delete note');
-          // setIsDeleting(false);
-          console.error(err);
-        })
-        .finally(() => {
-          // setIsDeleting(false);
-        });
+      try {
+        await deleteNote(note.id);
+        setTimeout(() => {
+          setIsDeleting(false);
+        }, 100);
+      } catch (err) {
+        setIsDeleting(false);
+        setError(err instanceof Error ? err.message : 'Failed to delete note');
+        console.error(err);
+      }
     }
-  }
+  };
 
-  function handleEdit() {
+  const handleEdit = () => {
     if (onEdit) {
       onEdit(note);
     }
-  }
+  };
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -95,10 +92,6 @@ const NoteItem: React.FC<NoteItemProps> = ({ note, onEdit }) => {
   // TODO (DONE): show error message if there is an error deleting the note
   // TODO (DONE): only show the edit button when the onEdit prop is provided
 
-  if (error) {
-    return <p>{error}</p>;
-  }
-
   return (
     <div className="note-item">
       <div className="note-header">
@@ -109,18 +102,17 @@ const NoteItem: React.FC<NoteItemProps> = ({ note, onEdit }) => {
               Edit
             </button>
           )}
-          {isDeleting ? (
-            <button className="delete-button" disabled>
-              Deleting...
-            </button>
-          ) : (
-            <button className="delete-button" onClick={handleDelete}>
-              Delete
-            </button>
-          )}
+          <button className="delete-button" disabled={isDeleting} onClick={handleDelete}>
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
         </div>
       </div>
       <div className="note-content">{note.content}</div>
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+        </div>
+      )}
       <div className="note-footer">
         <span title={formatDate(note.lastUpdated)}>
           Last updated: {getTimeAgo(note.lastUpdated)}

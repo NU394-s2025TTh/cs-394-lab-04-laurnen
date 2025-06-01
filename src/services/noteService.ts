@@ -50,7 +50,6 @@ export async function deleteNote(noteId: string): Promise<void> {
   } catch (error) {
     throw new Error(`${error}`);
   }
-  return Promise.resolve();
 }
 
 /**
